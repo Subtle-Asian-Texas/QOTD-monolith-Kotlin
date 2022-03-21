@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- Appender for logging to WARN and ERROR to stderr -->
+    <!-- http://logback.qos.ch/manual/appenders.html -->
+    <appender name="STDERR" class="ch.qos.logback.core.ConsoleAppender">
+        <target>System.err</target>
+        <!-- `ThresholdFilter` to only log events equal to or above specified threshold. -->
+        <!-- In this case: WARN and ERROR. -->
+        <!-- http://logback.qos.ch/manual/filters.html#thresholdFilter -->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>WARN</level>
+        </filter>
+        <encoder>
+            <!-- An extremely common logging pattern, also what would have been used by default if a logback.xml was not defined -->
+            <!-- http://logback.qos.ch/xref/ch/qos/logback/classic/BasicConfigurator.html#L47 -->
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Appender for logging to TRACE, DEBUG, and INFO to stdout -->
+    <!-- http://logback.qos.ch/manual/appenders.html -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <target>System.out</target>
+        <!-- `filter` for this appender to explicitly log TRACE, DEBUG and INFO events, and not -->
+        <!-- log WARN and ERROR events. -->
+        <!-- http://logback.qos.ch/manual/filters.html#levelFilter-->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>TRACE</level>
+            <onMatch>ACCEPT</onMatch>
+        </filter>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>DEBUG</level>
+            <onMatch>ACCEPT</onMatch>
+        </filter>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+        </filter>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>WARN</level>
+            <onMatch>DENY</onMatch>
+        </filter>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>DENY</onMatch>
+        </filter>
+        <encoder>
+            <!-- An extremely common logging pattern, also what would have been used by default if a logback.xml was not defined -->
+            <!-- http://logback.qos.ch/xref/ch/qos/logback/classic/BasicConfigurator.html#L47 -->
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Sets effective log level to INFO and above, and specifies appenders -->
+    <!-- http://logback.qos.ch/manual/architecture.html#effectiveLevel -->
+    <root level="INFO">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="STDERR" />
+    </root>
+</configuration>
