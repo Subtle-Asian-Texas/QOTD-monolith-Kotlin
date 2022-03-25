@@ -25,14 +25,24 @@ dependencies {
     // Logger recommended here: https://docs.discord4j.com/logging
     implementation("ch.qos.logback:logback-classic:1.2.11")
 
-    // Paralleldots API for semantic analysis
+    // Paralleldots API for semantic analysis https://dashboard.komprehend.io/plugin-api
     implementation("com.paralleldots:paralleldots:1.0.3")
 
     // Discord4J bot https://docs.discord4j.com/quickstart#download--installation
     implementation("com.discord4j:discord4j-core:3.2.2")
+    // Spring context, used for Dependency Injection and Application Setup
+    // https://mvnrepository.com/artifact/org.springframework/spring-context
+    implementation("org.springframework:spring-context:5.3.17")
 
-    // Kotest library and assertions
+    // MongoDB Driver https://mvnrepository.com/artifact/org.mongodb/mongodb-driver-reactivestreams
+    implementation("org.mongodb:mongodb-driver-sync:4.5.1")
+    // KMongo for integrated Kotlin support for MongoDB Queries https://litote.org/kmongo/quick-start/
+    implementation("org.litote.kmongo:kmongo-coroutine-serialization:4.5.0")
+
+
+    // Kotest library
     testImplementation("io.kotest:kotest-runner-junit5:5.2.1")
+    // Kotest assertions
     testImplementation("io.kotest:kotest-assertions-core:5.2.1")
     // Mockk Library for testing
     testImplementation("io.mockk:mockk:1.12.3")

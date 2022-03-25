@@ -1,4 +1,4 @@
-package dev.warvdine.qotddiscordbot
+package dev.warvdine.qotddiscordbot.logging
 
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory.getLogger
@@ -11,8 +11,8 @@ import kotlin.reflect.full.companionObject
  *
  *  Example usage:
  *
- *     import dev.warvdine.utils.logging.Logging
- *     import dev.warvdine.utils.logging.getLogger
+ *     import dev.warvdine.qotddiscordbot.logging.Logging
+ *     import dev.warvdine.qotddiscordbot.logging.getLogger
  *
  *     class MyClass() : Logging {
  *         val logger: Logger = getLogger()
@@ -23,12 +23,12 @@ import kotlin.reflect.full.companionObject
 interface Logging
 
 /**
- * This is an extension method (see [Extensions Functions in Kotlin](https://kotlinlang.org/docs/extensions.html))
+ * This is an extension method (see [Extensions Functions in Kotlin](https://kotlinlang.org/docs/extensions.html) )
  *
- * The generic parameter T is marked as reified so we can get the class at runtime with ```T::class.java```
- * (see [Reified Functions in Kotlin](https://www.baeldung.com/kotlin/reified-functions))
+ * The generic parameter T is marked as reified so we can get the class at runtime with ``T::class.java``` here
+ * (see [Reified Functions in Kotlin](https://www.baeldung.com/kotlin/reified-functions) )
  *
- * This extension function only applies to (and can be used from) instances of the Logging interface.
+ * This extension function only applies (and can be used from) instances of the Logging interface.
  */
 inline fun <reified T : Logging> T.getLogger(): Logger = getLogger(getClassForLogging(T::class.java))
 
