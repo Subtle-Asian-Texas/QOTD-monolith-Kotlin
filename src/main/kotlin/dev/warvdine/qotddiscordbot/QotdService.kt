@@ -2,19 +2,27 @@ package dev.warvdine.qotddiscordbot
 
 import dev.warvdine.qotddiscordbot.logging.Logging
 import dev.warvdine.qotddiscordbot.logging.getLogger
-import discord4j.core.event.domain.lifecycle.ReadyEvent
-import discord4j.core.event.domain.message.MessageCreateEvent
+import dev.warvdine.qotddiscordbot.persistence.Question
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
+import org.litote.kmongo.coroutine.CoroutineDatabase
 import org.slf4j.Logger
 
-class QotdService : Logging {
+/**
+ * Entry point of the QOTD Service.
+ *
+ * This should not have any discord specific logic, and only handle JSON from function calls.
+ */
+class QotdService(kMongoDatabaseClient: CoroutineDatabase) : Logging {
 
     private val logger: Logger = getLogger()
+    private val questionsClient = kMongoDatabaseClient.getCollection<Question>("Questions")
 
-    fun onReadyEvent(readyEvent: ReadyEvent) {
-        logger.info("Service is ready! logged in as: \"{}\"", readyEvent.self.username)
-    }
+    suspend fun createQuestions(questionListJson: String): List<String> {
+        val questionsToCreate = Json.decodeFromString<List<Question>>(questionListJson)
+        logger.info("Questions to create: {}", questionsToCreate)
 
-    fun onMessageCreateEvent(messageCreateEvent: MessageCreateEvent?) {
-        logger.info("Message Created: {}", messageCreateEvent?.message?.content ?: "Not found")
+        val result = questionsClient.insertMany(questionsToCreate)
+        return result.insertedIds.values.map { it.toString() }
     }
 }

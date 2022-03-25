@@ -1,21 +1,18 @@
 package dev.warvdine.qotddiscordbot;
 
 import com.mongodb.ConnectionString
+import dev.warvdine.qotddiscordbot.bot.MessageHandler
+import dev.warvdine.qotddiscordbot.bot.QotdBot
 import dev.warvdine.qotddiscordbot.paralleldots.SentimentAnalysisController
 import com.paralleldots.paralleldots.App as ParallelDotsClient
 import discord4j.core.DiscordClient
 import org.litote.kmongo.coroutine.CoroutineDatabase
 import org.litote.kmongo.coroutine.coroutine
 import org.litote.kmongo.reactivestreams.KMongo
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.InjectionPoint
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.beans.factory.config.ConfigurableBeanFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.Scope
 
 @Configuration
 @PropertySource("classpath:application.properties")
@@ -43,8 +40,26 @@ open class AppConfig(
     }
 
     @Bean
-    open fun qotdService(): QotdService {
-        return QotdService()
+    open fun qotdService(
+        kMongoDatabaseClient: CoroutineDatabase
+    ): QotdService {
+        return QotdService(
+            kMongoDatabaseClient = kMongoDatabaseClient
+        )
+    }
+
+    @Bean
+    open fun messageHandler() = MessageHandler()
+
+    @Bean
+    open fun qotdBot(
+        qotdService: QotdService,
+        messageHandler: MessageHandler,
+    ): QotdBot {
+        return QotdBot(
+            qotdService = qotdService,
+            messageHandler = messageHandler,
+        )
     }
 
     @Bean

@@ -4,6 +4,9 @@ plugins {
     application
     kotlin("jvm") version "1.5.10"
 
+    //Allows JSON encoding/decoding
+    kotlin("plugin.serialization") version "1.6.10"
+
     //plugin for linting
     id("org.jlleitschuh.gradle.ktlint") version "10.1.0"
 }
@@ -19,6 +22,15 @@ dependencies {
     // Allows for kotlin reflection to read companion objects and similar
     // https://kotlinlang.org/docs/reflection.html
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.6.10")
+    // Allows Json decoding/encoding
+    // https://mvnrepository.com/artifact/org.jetbrains.kotlinx/kotlinx-serialization-json
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
+//
+//    // Kotlin Coroutine Implementation https://github.com/Kotlin/kotlinx.coroutines#gradle
+//    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
+//    // To use Kotlin Coroutines with Discord4J Reactor API
+//    // https://github.com/Discord4J/Discord4J#-kotlin
+//    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.6.0")
 
     // SLF4J logger https://www.slf4j.org/download.html
     implementation("org.slf4j:slf4j-api:1.7.36")
