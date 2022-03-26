@@ -1,8 +1,9 @@
 package dev.warvdine.qotddiscordbot;
 
 import com.mongodb.ConnectionString
-import dev.warvdine.qotddiscordbot.bot.MessageHandler
-import dev.warvdine.qotddiscordbot.bot.QotdBot
+import dev.warvdine.qotddiscordbot.controllers.CreateCommentsController
+import dev.warvdine.qotddiscordbot.controllers.CreateQuestionsController
+import dev.warvdine.qotddiscordbot.controllers.UpdateQuestionsController
 import dev.warvdine.qotddiscordbot.paralleldots.SentimentAnalysisController
 import com.paralleldots.paralleldots.App as ParallelDotsClient
 import discord4j.core.DiscordClient
@@ -40,10 +41,28 @@ open class AppConfig(
     }
 
     @Bean
-    open fun qotdService(
+    open fun createCommentsController(
         kMongoDatabaseClient: CoroutineDatabase
-    ): QotdService {
-        return QotdService(
+    ): CreateCommentsController {
+        return CreateCommentsController(
+            kMongoDatabaseClient = kMongoDatabaseClient
+        )
+    }
+
+    @Bean
+    open fun createQuestionsController(
+        kMongoDatabaseClient: CoroutineDatabase
+    ): CreateQuestionsController {
+        return CreateQuestionsController(
+            kMongoDatabaseClient = kMongoDatabaseClient
+        )
+    }
+
+    @Bean
+    open fun updateQuestionsController(
+        kMongoDatabaseClient: CoroutineDatabase
+    ): UpdateQuestionsController {
+        return UpdateQuestionsController(
             kMongoDatabaseClient = kMongoDatabaseClient
         )
     }
@@ -53,11 +72,15 @@ open class AppConfig(
 
     @Bean
     open fun qotdBot(
-        qotdService: QotdService,
+        createQuestionsController: CreateQuestionsController,
+        createCommentsController: CreateCommentsController,
+        updateQuestionsController: UpdateQuestionsController,
         messageHandler: MessageHandler,
     ): QotdBot {
         return QotdBot(
-            qotdService = qotdService,
+            createQuestionsController = createQuestionsController,
+            createCommentsController = createCommentsController,
+            updateQuestionsController = updateQuestionsController,
             messageHandler = messageHandler,
         )
     }

@@ -1,5 +1,6 @@
-package dev.warvdine.qotddiscordbot.bot
+package dev.warvdine.qotddiscordbot
 
+import dev.warvdine.qotddiscordbot.logging.DiscordLoggerAppender
 import dev.warvdine.qotddiscordbot.logging.Logging
 import dev.warvdine.qotddiscordbot.logging.getLogger
 import discord4j.core.DiscordClient
@@ -12,39 +13,41 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import reactor.core.publisher.Mono
 
 class QotdBotApplication(
-    private val applicationContext: ApplicationContext = AnnotationConfigApplicationContext(dev.warvdine.qotddiscordbot.AppConfig::class.java),
+    private val applicationContext: ApplicationContext = AnnotationConfigApplicationContext(AppConfig::class.java),
     private val discordBot: DiscordClient = applicationContext.getBean(DiscordClient::class.java),
     private val qotdBot: QotdBot = applicationContext.getBean(QotdBot::class.java),
 ) : Logging {
 
     private val logger: Logger = getLogger()
 
-    private fun errorHandler(error: Throwable): Publisher<out Void> {
-        logger.error("Error found: {}", error)
-        return Mono.empty()
-    }
-
     fun start() {
         logger.info("Starting Bot . . .")
 
         val client = discordBot.login().block()!!
 
-        client.on(ReadyEvent::class.java)
-            .flatMap {
-                qotdBot.onReadyEvent(it)
-                Mono.empty<Void>()
+        // Sets the DiscordLoggerAppender so it knows it's been attached
+        DiscordLoggerAppender.discordClient = client
+        logger.info("Discord Logger Attached.")
+
+        client
+            .on(ReadyEvent::class.java)
+            .subscribe {
+                try {
+                    qotdBot.onReadyEvent(it)
+                } catch (exception: Throwable) {
+                    logger.error("Error found:", exception)
+                }
             }
-            .onErrorResume(::errorHandler)
-            .subscribe()
 
         client
             .on(MessageCreateEvent::class.java)
-            .flatMap {
-                qotdBot.onMessageCreateEvent(it)
-                Mono.empty<Void>()
+            .subscribe {
+                try {
+                    qotdBot.onMessageCreateEvent(it)
+                } catch (exception: Throwable) {
+                    logger.error("Error found:", exception)
+                }
             }
-            .onErrorResume(::errorHandler)
-            .subscribe()
 
         client.onDisconnect().block()
     }

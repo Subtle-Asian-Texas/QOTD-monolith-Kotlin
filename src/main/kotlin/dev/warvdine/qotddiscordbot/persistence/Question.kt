@@ -3,19 +3,21 @@ package dev.warvdine.qotddiscordbot.persistence
 @kotlinx.serialization.Serializable
 data class QuestionStats(
     /** Number of comments marked as an answer for this question */
-    var answersReceived: UInt? = null,
+    var totalAnswersReceived: UInt? = 0U,
+    /** Number of comments marked as an answer for this question within 30 hours from question being asked */
+    var totalAnswersReceivedWithin30Hours: UInt? = 0U,
     /** Number of total comments in the thread for this question */
-    var totalCommentsReceivedInThread: UInt? = null
+    var totalCommentsReceivedInThread: UInt? = 0U
 )
 
 @kotlinx.serialization.Serializable
 data class Question(
     /** ID of the discord message containing the question */
-    var _id: String,
+    var _id: String? = null,
     /**ID of the discord channel/thread containing the question */
-    var channelId: String,
+    var channelId: String? = null,
     /** ID of the discord server containing the question */
-    var serverId: String,
+    var serverId: String? = null,
     /** Text of the message */
     var messageText: String? = null,
     /** Type of the question */
