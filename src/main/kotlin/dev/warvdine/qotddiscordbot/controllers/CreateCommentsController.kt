@@ -4,13 +4,9 @@ import dev.warvdine.qotddiscordbot.logging.Logging
 import dev.warvdine.qotddiscordbot.logging.getLogger
 import dev.warvdine.qotddiscordbot.persistence.AuditFields
 import dev.warvdine.qotddiscordbot.persistence.Comment
-import dev.warvdine.qotddiscordbot.persistence.Question
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
 import org.litote.kmongo.coroutine.CoroutineDatabase
 import org.slf4j.Logger
 import java.time.Instant
-
 
 /**
  * Handles Creating Questions in different methods.

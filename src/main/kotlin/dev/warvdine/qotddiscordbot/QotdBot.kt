@@ -2,12 +2,11 @@ package dev.warvdine.qotddiscordbot
 
 import dev.warvdine.qotddiscordbot.controllers.CreateCommentsController
 import dev.warvdine.qotddiscordbot.controllers.CreateQuestionsController
+import dev.warvdine.qotddiscordbot.controllers.CreateUsersStatsController
 import dev.warvdine.qotddiscordbot.controllers.UpdateQuestionsController
 import dev.warvdine.qotddiscordbot.logging.BOT_LOGS_CHANNEL_ID
 import dev.warvdine.qotddiscordbot.logging.Logging
 import dev.warvdine.qotddiscordbot.logging.getLogger
-import dev.warvdine.qotddiscordbot.persistence.Comment
-import dev.warvdine.qotddiscordbot.persistence.Question
 import discord4j.core.event.domain.lifecycle.ReadyEvent
 import discord4j.core.event.domain.message.MessageCreateEvent
 import kotlinx.coroutines.Dispatchers
@@ -24,6 +23,7 @@ import org.slf4j.Logger
 class QotdBot(
     private val createQuestionsController: CreateQuestionsController,
     private val createCommentsController: CreateCommentsController,
+    private val createUsersStatsController: CreateUsersStatsController,
     private val updateQuestionsController: UpdateQuestionsController,
     val messageHandler: MessageHandler,
 ) : Logging {
@@ -47,36 +47,44 @@ class QotdBot(
             return
         }
 
+        var responseMessage: String
         runBlocking(Dispatchers.Default) {
-            when (messageHandlerResponse.requestName) {
+            responseMessage = when (messageHandlerResponse.requestName) {
                 "createQuestions" -> {
-                    createQuestions(messageCreateEvent, messageHandlerResponse.requestBodyJson!!)
+                    createQuestions(messageHandlerResponse.requestBodyJson!!)
                 }
                 "createComments" -> {
-                    createComments(messageCreateEvent, messageHandlerResponse.requestBodyJson!!)
+                    createComments(messageHandlerResponse.requestBodyJson!!)
+                }
+                "createUsersStats" -> {
+                    createUsersStats(messageHandlerResponse.requestBodyJson!!)
                 }
                 "updateQuestions" -> {
-                    updateQuestions(messageCreateEvent, messageHandlerResponse.requestBodyJson!!)
+                    updateQuestions(messageHandlerResponse.requestBodyJson!!)
                 }
-                else -> { logger.info("No matching commands found.") }
+                else -> { "No matching command found for: ${messageHandlerResponse.requestName}" }
             }
         }
+
+        logger.info(responseMessage)
+
+        messageCreateEvent
+            .message
+            .channel
+            .flatMap { it.createMessage(responseMessage) }
+            .subscribe()
     }
 
-    suspend fun createQuestions(messageCreateEvent: MessageCreateEvent, requestBodyJson: String) {
+    private suspend fun createQuestions(requestBodyJson: String): String {
         val result = createQuestionsController.createQuestions(
             Json.decodeFromString(requestBodyJson)
         )
         logger.info("Result: {}", result)
 
-        messageCreateEvent
-            .message
-            .channel
-            .flatMap { it.createMessage("Questions created: $result") }
-            .subscribe()
+        return "Questions created: $result"
     }
 
-    suspend fun createComments(messageCreateEvent: MessageCreateEvent, requestBodyJson: String) {
+    private suspend fun createComments(requestBodyJson: String): String {
         val result = createCommentsController.createComments(
             Json.decodeFromString(requestBodyJson)
         )
@@ -85,21 +93,23 @@ class QotdBot(
         )
         logger.info("Result: {}", result)
 
-        messageCreateEvent
-            .message
-            .channel
-            .flatMap { it.createMessage("Comments created: $result") }
-            .subscribe()
+        return "Comments created: $result"
     }
 
-    suspend fun updateQuestions(messageCreateEvent: MessageCreateEvent, requestBodyJson: String) {
-        val result = updateQuestionsController.updateQuestionsFromJson(requestBodyJson)
+    private suspend fun createUsersStats(requestBodyJson: String): String {
+        val result = createUsersStatsController.createUsersStats(
+            Json.decodeFromString(requestBodyJson)
+        )
+        logger.info("Result: {}", result)
+        return "UsersStats created: $result"
+    }
+
+    private suspend fun updateQuestions(requestBodyJson: String): String {
+        val result = updateQuestionsController.updateQuestionsFromQuestionPartials(
+            Json.decodeFromString(requestBodyJson)
+        )
         logger.info("Result: {}", result)
 
-        messageCreateEvent
-            .message
-            .channel
-            .flatMap { it.createMessage("Questions updated?: $result") }
-            .subscribe()
+        return "Questions updated?: $result"
     }
 }

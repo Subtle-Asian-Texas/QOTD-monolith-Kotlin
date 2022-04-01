@@ -6,6 +6,8 @@ data class UserStats(
     var _id: String? = null,
     /** Username of the User */
     var discordUsername: String? = null,
+    /** 4-digit number at the end of the user's discord username */
+    var discriminator: String? = null,
     /** Nickname of the User on the discord server */
     var serverNickname: String? = null,
     /** Number of Questions answered with type 'QOTD' */

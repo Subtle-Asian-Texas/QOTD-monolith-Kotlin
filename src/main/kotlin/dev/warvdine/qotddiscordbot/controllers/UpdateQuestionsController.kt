@@ -18,9 +18,8 @@ class UpdateQuestionsController(kMongoDatabaseClient: CoroutineDatabase) : Loggi
     private val logger = getLogger()
     private val questionsClient = kMongoDatabaseClient.getCollection<Question>("Questions")
 
-    suspend fun updateQuestionsFromJson(questionListJson: String): List<String> {
-        logger.info("updateQuestions: {}", questionListJson)
-        val questionPartialsToUpdate: List<Question> = Json.decodeFromString(questionListJson)
+    suspend fun updateQuestionsFromQuestionPartials(questionPartialsToUpdate: List<Question>): List<String> {
+        logger.info("updateQuestions: {}", questionPartialsToUpdate)
 
         // Validation Logic
         val listOfQuestionErrors: List<String> = questionPartialsToUpdate.mapNotNull {
@@ -45,7 +44,7 @@ class UpdateQuestionsController(kMongoDatabaseClient: CoroutineDatabase) : Loggi
                 questionPartialWithAudiField._id!!
             } catch (exception: Throwable) {
                 logger.error("Error when updating question with id: ${questionPartial._id}", exception)
-                "Error with ID: ${questionPartial._id}"
+                "Error with Question ID: ${questionPartial._id}"
             }
         }
 

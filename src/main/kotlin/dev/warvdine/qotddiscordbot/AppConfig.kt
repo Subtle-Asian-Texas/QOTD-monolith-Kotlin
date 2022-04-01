@@ -3,6 +3,7 @@ package dev.warvdine.qotddiscordbot;
 import com.mongodb.ConnectionString
 import dev.warvdine.qotddiscordbot.controllers.CreateCommentsController
 import dev.warvdine.qotddiscordbot.controllers.CreateQuestionsController
+import dev.warvdine.qotddiscordbot.controllers.CreateUsersStatsController
 import dev.warvdine.qotddiscordbot.controllers.UpdateQuestionsController
 import dev.warvdine.qotddiscordbot.paralleldots.SentimentAnalysisController
 import com.paralleldots.paralleldots.App as ParallelDotsClient
@@ -68,18 +69,30 @@ open class AppConfig(
     }
 
     @Bean
+    open fun createUsersStatsController(
+        kMongoDatabaseClient: CoroutineDatabase
+    ): CreateUsersStatsController {
+        return CreateUsersStatsController(
+            kMongoDatabaseClient = kMongoDatabaseClient
+        )
+    }
+
+
+    @Bean
     open fun messageHandler() = MessageHandler()
 
     @Bean
     open fun qotdBot(
         createQuestionsController: CreateQuestionsController,
         createCommentsController: CreateCommentsController,
+        createUsersStatsController: CreateUsersStatsController,
         updateQuestionsController: UpdateQuestionsController,
         messageHandler: MessageHandler,
     ): QotdBot {
         return QotdBot(
             createQuestionsController = createQuestionsController,
             createCommentsController = createCommentsController,
+            createUsersStatsController = createUsersStatsController,
             updateQuestionsController = updateQuestionsController,
             messageHandler = messageHandler,
         )
